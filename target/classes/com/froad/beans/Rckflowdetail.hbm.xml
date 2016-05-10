@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2013-11-5 11:49:50 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.froad.beans.Rckflowdetail" table="RCKFLOWDETAIL">
+        <comment>流程执行记录表</comment>
+        <composite-id name="id" class="com.froad.beans.RckflowdetailId">
+            <key-property name="cleardate" type="string">
+                <column name="CLEARDATE" length="16">
+                    <comment>流程日期</comment>
+                </column>
+            </key-property>
+            <key-property name="rcktype" type="string">
+                <column name="RCKTYPE" length="20">
+                    <comment>流程类型</comment>
+                </column>
+            </key-property>
+            <key-property name="rckorder" type="int">
+                <column name="RCKORDER" precision="9" scale="0">
+                    <comment>流程顺序</comment>
+                </column>
+            </key-property>
+        </composite-id>
+        <property name="flowname" type="string">
+            <column name="FLOWNAME">
+                <comment>流程名称</comment>
+            </column>
+        </property>
+        <property name="flowstate" type="string">
+            <column name="FLOWSTATE" length="5">
+                <comment>流程状态(C:成功 E:异常 N:未执行 R:正在运行)</comment>
+            </column>
+        </property>
+        <property name="dealcount" type="java.lang.Integer">
+            <column name="DEALCOUNT" precision="9" scale="0">
+                <comment>处理数量</comment>
+            </column>
+        </property>
+        <property name="successcount" type="java.lang.Integer">
+            <column name="SUCCESSCOUNT" precision="9" scale="0">
+                <comment>成功数量</comment>
+            </column>
+        </property>
+        <property name="failcount" type="java.lang.Integer">
+            <column name="FAILCOUNT" precision="9" scale="0">
+                <comment>失败数量</comment>
+            </column>
+        </property>
+        <property name="dealdatetime" type="java.util.Date">
+            <column name="DEALDATETIME">
+                <comment>处理时间</comment>
+            </column>
+        </property>
+        <property name="exceptiondesc" type="string">
+            <column name="EXCEPTIONDESC">
+                <comment>异常描述</comment>
+            </column>
+        </property>
+        <property name="isexecute" type="string">
+            <column name="ISEXECUTE" length="5">
+                <comment>异常时是否继续执行(Y:是 N:否)</comment>
+            </column>
+        </property>
+        <property name="alowchange" type="string">
+            <column name="ALOWCHANGE" length="5">
+                <comment>是否允许更改可执行状态(Y:是 N:否)</comment>
+            </column>
+        </property>
+    </class>
+</hibernate-mapping>

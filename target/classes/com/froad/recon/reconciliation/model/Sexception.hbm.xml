@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping >
+ 	<class name="com.froad.recon.reconciliation.model.Sexception" table="s_exception" >
+
+         <id name="orderNo" column="order_no" type="java.lang.String">
+            <generator class="assigned" />
+        </id>
+		
+		
+		<property name="orderTime" column="order_time"  type="java.util.Date"/>
+		<property name="chanelType" column="chanelType"  type="java.lang.String"/>
+		<property name="tradeType" column="trade_type"  type="java.lang.String"/>
+		<property name="tradeTypeName" column="trade_type_name"  type="java.lang.String"/>
+		<property name="errorCode" column="error_code"  type="java.lang.String"/>
+		<property name="errorDesc" column="error_desc"  type="java.lang.String"/>
+		<property name="tradeMoney" column="trade_money"  type="java.math.BigDecimal"/>
+		<property name="createTime" column="create_time"  type="java.util.Date"/>
+		<property name="reconDate" column="recon_date"  type="java.lang.String"/>
+		<property name="processStatus" column="process_status"  type="java.lang.String"/>
+		<property name="processInfo" column="process_info"  type="java.lang.String"/>
+		<property name="frontCode" column="front_code"  type="java.lang.String"/>
+		<property name="frontNo" column="front_no"  type="java.lang.String"/>
+		<property name="frontName" column="front_name"  type="java.lang.String"/>
+		<property name="supplierNo" column="supplier_no"  type="java.lang.String"/>
+		<property name="supplierName" column="supplier_name"  type="java.lang.String"/>
+		<property name="pointBankNo" column="point_bank_no"  type="java.lang.String"/>
+		<property name="pointBankName" column="point_bank_name"  type="java.lang.String"/>
+		<property name="bankNo" column="bank_no"  type="java.lang.String"/>
+		<property name="bankName" column="bank_name"  type="java.lang.String"/>
+		<property name="pointOrgNo" column="point_org_no"  type="java.lang.String"/>
+		<property name="pointOrgName" column="point_org_name"  type="java.lang.String"/>
+		
+		<property name="isPoints" column="is_points"  type="java.lang.String"/>
+		<property name="isBankPoints" column="is_bank_points"  type="java.lang.String"/>
+		<property name="isPay" column="is_pay"  type="java.lang.String"/>
+		<property name="isPartner" column="is_partner"  type="java.lang.String"/>
+		<property name="isFront" column="is_front"  type="java.lang.String"/>
+
+    </class>
+</hibernate-mapping>
+

@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2014-2-18 16:27:25 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.froad.beans.Rckcluster" table="RCKCLUSTER">
+        <comment>集群定时任务记录表</comment>
+        <id name="clustertype" type="string">
+            <column name="CLUSTERTYPE" length="20"/>
+            <generator class="assigned"/>
+        </id>
+        <property name="hostaddr" type="string">
+            <column name="HOSTADDR">
+                <comment>主机IP地址</comment>
+            </column>
+        </property>
+        <property name="exestate" type="string">
+            <column name="EXESTATE" length="5">
+                <comment>执行状态 N R C E</comment>
+            </column>
+        </property>
+        <property name="exedate" type="string">
+            <column name="EXEDATE" length="8">
+                <comment>最后执行日期</comment>
+            </column>
+        </property>
+        <property name="exestarttime" type="string">
+            <column name="EXESTARTTIME" length="6">
+                <comment>开始时间</comment>
+            </column>
+        </property>
+        <property name="exeendtime" type="string">
+            <column name="EXEENDTIME" length="6">
+                <comment>结束时间</comment>
+            </column>
+        </property>
+        <property name="isexecute" type="string">
+            <column name="ISEXECUTE" length="1">
+                <comment>是否执行 Y:是 N：否</comment>
+            </column>
+        </property>
+        <property name="isassign" type="string">
+            <column name="ISASSIGN" length="1">
+                <comment>是否指定计算机运行 Y:是 N：否</comment>
+            </column>
+        </property>
+        <property name="assignhostaddr" type="string">
+            <column name="ASSIGNHOSTADDR">
+                <comment>指定计算IP地址【如果是指定计算运行】</comment>
+            </column>
+        </property>
+        <property name="remark" type="string">
+            <column name="REMARK">
+                <comment>描述</comment>
+            </column>
+        </property>
+    </class>
+</hibernate-mapping>

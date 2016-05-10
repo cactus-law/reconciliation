@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping >
+ 	<class name="com.froad.recon.importfile.model.IfrontTrade" table="i_front_trade" >
+
+        <id name="id" column="id" type="java.lang.String">
+            <generator class="assigned" />
+        </id>
+		
+		
+		<property name="requestNo" column="request_no"  type="java.lang.String"/>
+		<property name="orderNo" column="order_no"  type="java.lang.String"/>
+		<property name="tradeMoney" column="trade_money"  type="java.math.BigDecimal"/>
+		<property name="orderTime" column="order_time"  type="java.util.Date"/>
+		<property name="chanelType" column="chanel_type"  type="java.lang.String"/>
+		<property name="transferType" column="transfer_type"  type="java.lang.String"/>
+		
+		<property name="frontPartnerNo" column="front_partner_no"  type="java.lang.String"/>
+		<property name="supplierNo" column="supplier_no"  type="java.lang.String"/>
+		<property name="pointBankGroup" column="point_bank_group"  type="java.lang.String"/>
+		<property name="bankGroup" column="bank_group"  type="java.lang.String"/>
+		<property name="pointOrg" column="point_org"  type="java.lang.String"/>
+		
+		<property name="resultCode" column="result_code"  type="java.lang.String"/>
+		<property name="createTime" column="create_time"  type="java.util.Date"/>
+		<property name="memberId" column="member_id"  type="java.lang.String"/>
+		
+		<property name="reconDate" column="recon_date"  type="java.lang.String"/>
+		<property name="virtualTradeType" column="virtual_trade_type"  type="java.lang.String"/>
+		<!-- One-To-Many attributes -->
+
+		<!-- Many-To-One attributes -->
+
+    </class>
+</hibernate-mapping>
+

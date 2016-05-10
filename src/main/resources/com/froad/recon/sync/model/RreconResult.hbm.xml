@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping >
+ 	<class name="com.froad.recon.sync.model.RreconResult" table="r_recon_result" >
+
+        <id name="id" column="id" type="java.lang.String">
+            <generator class="assigned" />
+        </id>
+		
+		
+		<property name="platformDetailNo" column="platform_detail_no"  type="java.lang.String"/>
+		<property name="platformDetailName" column="platform_detail_name"  type="java.lang.String"/>
+		<property name="platformNo" column="platform_no"  type="java.lang.String"/>
+		<property name="platformName" column="platform_name"  type="java.lang.String"/>
+		<property name="importTotal" column="import_total"  type="java.lang.Integer"/>
+		<property name="successTotal" column="success_total"  type="java.lang.Integer"/>
+		<property name="successTotalMoney" column="success_total_money"  type="java.math.BigDecimal"/>
+		<property name="refundTotalMoney" column="refund_total_money"  type="java.math.BigDecimal"/>
+		<property name="exceptionTotal" column="exception_total"  type="java.lang.Integer"/>
+		<property name="delayTotal" column="delay_total"  type="java.lang.Integer"/>
+		<property name="noTotal" column="no_total"  type="java.lang.Integer"/>
+		<property name="reconDate" column="recon_date"  type="java.lang.String"/>
+		<property name="createTime" column="create_time"  type="java.util.Date"/>
+		
+		<!-- One-To-Many attributes -->
+
+		<!-- Many-To-One attributes -->
+
+    </class>
+</hibernate-mapping>
+

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping >
+ 	<class name="com.froad.recon.importfile.model.IbankDataAnhui" table="i_bank_data_anhui" >
+
+        <id name="orderNo" column="order_no" type="java.lang.String">
+            <generator class="assigned" />
+        </id>
+		
+		
+		<property name="orderTime" column="order_time"  type="java.util.Date"/>
+		<property name="orderType" column="order_type"  type="java.lang.String"/>
+		<property name="orgOrderNo" column="org_order_no"  type="java.lang.String"/>
+		<property name="userId" column="user_id"  type="java.lang.String"/>
+		<property name="points" column="points"  type="java.math.BigDecimal"/>
+		<property name="bankOrderNo" column="bank_order_no"  type="java.lang.String"/>
+		<property name="blance" column="blance"  type="java.math.BigDecimal"/>
+		
+		<!-- One-To-Many attributes -->
+
+		<!-- Many-To-One attributes -->
+
+    </class>
+</hibernate-mapping>
+

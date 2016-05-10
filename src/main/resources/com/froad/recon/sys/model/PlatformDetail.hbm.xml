@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping >
+ 	<class name="com.froad.recon.sys.model.PlatformDetail" table="platform_detail" >
+
+        <id name="platformDetailNo" column="platform_detail_no"  type="java.lang.String">
+            <generator class="assigned" />
+        </id>
+		
+		
+		<property name="platformDetailName" column="platform_detail_name"  type="java.lang.String"/>
+		<property name="platformNo" column="platform_no"  type="java.lang.String"/>
+		<property name="status" column="status"  type="java.lang.String"/>
+		<property name="tableName" column="table_name"  type="java.lang.String"/>
+		<property name="tableField" column="table_field"  type="java.lang.String"/>
+		<property name="chanelType" column="chanel_type"  type="java.lang.String"/>
+		<property name="channelNo" column="channel_no"  type="java.lang.String"/>
+		<property name="flag" column="flag"  type="java.lang.String"/>
+		<property name="createTime" column="create_time"  type="java.util.Date"/>
+		<property name="updateTime" column="update_time"  type="java.util.Date"/>
+		
+		<property name="fileBean" column="file_bean"  type="java.lang.String"/>
+		<property name="fileUrl" column="file_url"  type="java.lang.String"/>
+		<property name="fileParam" column="file_param"  type="java.lang.String"/>
+		<property name="fileType" column="file_type"  type="java.lang.String"/>
+		<property name="localFilePath" column="local_file_path"  type="java.lang.String"/>
+		<property name="fileReadBean" column="file_read_bean"  type="java.lang.String"/>
+		<property name="ruleFileName" column="rule_file_name"  type="java.lang.String"/>
+		<property name="checkDataBean" column="check_data_bean"  type="java.lang.String"/>
+		<property name="dataDealBean" column="data_deal_bean"  type="java.lang.String"/>
+		<property name="fileStatus" column="file_status"  type="java.lang.String"/>
+		<property name="isCommonTable" column="is_common_table"  type="java.lang.String"/>
+		<!-- One-To-Many attributes -->
+
+		<!-- Many-To-One attributes -->
+
+    </class>
+</hibernate-mapping>
+

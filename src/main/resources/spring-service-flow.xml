@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+	<!-- 数据入redis 1-->
+	<bean id="loadDataRedisFlow"
+		class="com.froad.recon.reconciliation.flow.LoadDataRedisFlow">
+		<property name="platformService" ref="platformService" />
+		<property name="dynamicService" ref="dynamicService" />
+		<property name="redisManager" ref="redisManager" />
+		<property name="snoReconService" ref="snoReconService" />
+		<property name="sdelayService" ref="sdelayService" />
+	</bean>
+	<!-- 求交集入结果集表2-->
+	<bean id="tradeResultFlow"
+		class="com.froad.recon.reconciliation.flow.TradeResultFlow">
+		<property name="platformService" ref="platformService" />
+		<property name="dynamicService" ref="dynamicService" />
+		<property name="redisManager" ref="redisManager" />
+		<property name="ifrontTradeService" ref="ifrontTradeService" />
+		<property name="sTradeResultService" ref="sTradeResultService" />
+	</bean>
+	
+	<!-- 结果集分离3-->
+	<bean id="tradeResultSeparateFlow"
+		class="com.froad.recon.reconciliation.flow.TradeResultSeparateFlow">
+		<property name="platformService" ref="platformService" />
+		<property name="platformDetailService" ref="platformDetailService" />
+		<property name="sTradeResultService" ref="sTradeResultService" />
+		<property name="dynamicService" ref="dynamicService" />
+		
+		<property name="snoReconService" ref="snoReconService" />
+		<property name="sdelayService" ref="sdelayService" />
+		<property name="ssuccessService" ref="ssuccessService" />
+		<property name="sexceptionService" ref="sexceptionService" />
+		<property name="droolsRuleEngine" ref="droolsRuleEngine" />
+		<property name="pageMessageUtil" ref="pageMessageUtil" />
+		<property name="tdiractionaryService" ref="tdiractionaryService" />
+	</bean>
+	<!--结果分离后处理4-->
+	<bean id="dataAfterFlow"
+		class="com.froad.recon.reconciliation.flow.DataAfterFlow">
+		<property name="snoReconService" ref="snoReconService" />
+		<property name="sdelayService" ref="sdelayService" />
+		<property name="ssuccessService" ref="ssuccessService" />
+		<property name="sexceptionService" ref="sexceptionService" />
+		<property name="iimpStatusDetailService" ref="iimpStatusDetailService" />
+	</bean>
+	
+	<!-- 数据同步 -->
+	<bean id="reconResultFlow"
+		class="com.froad.recon.sync.flow.ReconResultFlow">
+		<property name="platformService" ref="platformService" />
+		<property name="dynamicService" ref="dynamicService" />
+		<property name="rreconResultService" ref="rreconResultService" />
+	</bean>
+</beans>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping >
+ 	<class name="com.froad.recon.importfile.model.Ipoints" table="i_points" >
+
+        <id name="transferId" column="transfer_id" type="java.lang.String">
+            <generator class="assigned" />
+        </id>
+		
+		
+		<property name="transferType" column="Transfer_type"  type="java.lang.String"/>
+		<property name="requestNo" column="request_no"  type="java.lang.String"/>
+		<property name="partnerNo" column="partner_no"  type="java.lang.String"/>
+		<property name="points" column="points"  type="java.math.BigDecimal"/>
+		<property name="chanelType" column="chanel_type"  type="java.lang.String"/>
+		<property name="channelNo" column="channel_no"  type="java.lang.String"/>
+		<property name="orderTime" column="order_time"  type="java.util.Date"/>
+		<property name="createTime" column="create_time"  type="java.util.Date"/>
+		<property name="memberId" column="member_id"  type="java.lang.String"/>
+		
+		<!-- One-To-Many attributes -->
+
+		<!-- Many-To-One attributes -->
+
+    </class>
+</hibernate-mapping>
+

@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2014-8-4 9:40:51 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.froad.beans.Rckflow" table="RCKFLOW">
+        <comment>流程定义表</comment>
+        <composite-id name="id" class="com.froad.beans.RckflowId">
+            <key-property name="rcktype" type="string">
+                <column name="RCKTYPE" length="20">
+                    <comment>流程类型</comment>
+                </column>
+            </key-property>
+            <key-property name="rckorder" type="int">
+                <column name="RCKORDER" precision="9" scale="0">
+                    <comment>流程顺序</comment>
+                </column>
+            </key-property>
+        </composite-id>
+        <property name="beanid" type="string">
+            <column name="BEANID">
+                <comment>实体BEAN</comment>
+            </column>
+        </property>
+        <property name="initstate" type="string">
+            <column name="INITSTATE" length="5">
+                <comment>是否执行状态(Y:是 N:否)</comment>
+            </column>
+        </property>
+        <property name="alowchange" type="string">
+            <column name="ALOWCHANGE" length="5">
+                <comment>是否允许更改可执行状态(Y:是 N:否)</comment>
+            </column>
+        </property>
+        <property name="expcont" type="string">
+            <column name="EXPCONT" length="5">
+                <comment>异常时是否继续执行(Y:是 N:否)</comment>
+            </column>
+        </property>
+        <property name="singleext" type="string">
+            <column name="SINGLEEXT" length="5">
+                <comment>单独执行(Y:是 N:否)</comment>
+            </column>
+        </property>
+        <property name="remark" type="string">
+            <column name="REMARK">
+                <comment>备注(流程名称)</comment>
+            </column>
+        </property>
+        <property name="msg" type="string">
+            <column name="MSG">
+                <comment>透传参数,默认传平台明细表ID</comment>
+            </column>
+        </property>
+    </class>
+</hibernate-mapping>

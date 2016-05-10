@@ -1,0 +1,200 @@
+package com.froad.rules;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.froad.comon.constant.AppConstant;
+import com.froad.comon.constant.ReconBusinessConstant;
+import com.froad.recon.reconciliation.model.STradeResult;
+import com.froad.recon.reconciliation.drools.ReconRuleHelp;
+import com.froad.recon.reconciliation.drools.ReconRefundRuleHelp;
+
+ //前端和现金
+ rule "stepfPay"
+	salience 20
+	activation-group "g_result"
+	lock-on-active true
+	when 
+	  	 result:STradeResult((tradeType=='2020'||tradeType=='2051'
+	  	 ||tradeType=='2050'||tradeType=='2053'
+	  	 ||tradeType=='2055'||tradeType=='2030'
+	  	 ||tradeType=='2010'||tradeType=='1121')&&chanelType=='1'&& virtualTradeType==null ) 
+	then
+		String tableName="";
+		String errorCode="";
+		String errorDesc="";
+		 
+		String isFront = result.getIsFront();
+		String frontCode=result.getFrontCode();
+		List<String> sources=new ArrayList<String>();
+		sources.add(ReconBusinessConstant.PlatformNo.FRONT);
+		sources.add(ReconBusinessConstant.PlatformNo.PAY);
+		ReconRuleHelp.initialSTradeResult(result, sources);
+		
+		if(STradeResult.IS_YES.equals(isFront)){
+			if(ReconRuleHelp.isSourceHasFile(result, sources)){//几方文件上传成功
+				/***对账成功**/
+				if(ReconRuleHelp.isSuccess(result, sources)){
+					tableName=STradeResult.TABLE_NAME_S_SUCCESS;
+				}else{
+					//各方都已上传
+					if(ReconRuleHelp.isSourceAllSuccess(result,sources)){
+						if(ReconRuleHelp.isSourceHasDelay(result, sources, AppConstant.CUT_HOUR)){ //是延迟对账
+							tableName=STradeResult.TABLE_NAME_S_DELAY;
+							result.setPlatformNos(ReconRuleHelp.getSourceSuccessPlatform(result, sources));
+						}else{
+							if(STradeResult.FRONT_CODE_SUCCESS.equals(frontCode)){
+							   if(!STradeResult.IS_YES.equals(result.getIsPay())){
+									tableName=STradeResult.TABLE_NAME_S_EXCEPTION;
+									errorCode="f_unilateral_fPay";	//"前端单边";
+							   }
+							}else{
+								if(STradeResult.IS_YES.equals(result.getIsPay())){
+									tableName=STradeResult.TABLE_NAME_S_EXCEPTION;
+									errorCode="f_fail_process_fPay";	//前端数据错误
+								}else{
+									tableName=STradeResult.TABLE_NAME_S_OTHER;
+									errorCode="f_success_fPay";	//前端无差错
+								}
+							}
+						}
+					}else{
+					  tableName=STradeResult.TABLE_NAME_S_OTHER;
+					  errorCode="flieNoUpload_fPay";	//前端现金银行未上传
+					}
+				}
+			}else{//上传失败，入未对账表    银行文件未生成或者未获取到  一方数据入末对账表
+				tableName=STradeResult.TABLE_NAME_S_NO_RECON;
+				result.setPlatformNos(ReconRuleHelp.getSourceSuccessPlatform(result, sources));
+			}
+		}else{//差错
+			errorCode="unilateral_fPay";
+			//errorDesc="银行现金单边";
+			tableName=STradeResult.TABLE_NAME_S_EXCEPTION;
+		}
+		result.setTableName(tableName);
+		result.setErrorCode(errorCode);
+		result.setErrorDesc(errorDesc);
+ end
+ 
+ 
+ //退款
+ rule "stepayRefund"
+	salience 20
+	activation-group "g_result"
+	lock-on-active true
+	when 
+	  	 result:STradeResult((tradeType=='2040'||tradeType=='2041'
+	  	 ||tradeType=='2042'||tradeType=='2043'
+	  	 ||tradeType=='2044'||tradeType=='2045')&&chanelType=='1' && virtualTradeType==null ) 
+	then
+		String tableName="";
+		String errorCode="";
+		String errorDesc="";
+		 
+		String frontCode=result.getFrontCode();
+		List<String> sources=new ArrayList<String>();
+		sources.add(ReconBusinessConstant.PlatformNo.FRONT);
+		sources.add(ReconBusinessConstant.PlatformNo.PAY);
+		ReconRuleHelp.initialSTradeResult(result, sources);
+		
+		/***对账成功**/
+		if(ReconRuleHelp.isSuccess(result, sources)){
+			tableName=STradeResult.TABLE_NAME_S_SUCCESS;
+		}else{
+			if( !STradeResult.FRONT_CODE_SUCCESS.equals(frontCode)&& !STradeResult.IS_YES.equals(result.getIsPay())){
+				tableName=STradeResult.TABLE_NAME_S_EXCEPTION;
+				errorCode="f_fail_process_payRefund";	//errorDesc=前端数据错误
+			}else{
+				if(ReconRefundRuleHelp.isSourceHasDelay(result, sources, AppConstant.DELAY_DAYS)){
+					tableName=STradeResult.TABLE_NAME_S_EXCEPTION;
+					errorCode="f_delay_fail_payRefund";	//延迟错误 
+				} 
+			}
+		}
+		result.setTableName(tableName);
+		result.setErrorCode(errorCode);
+		result.setErrorDesc(errorDesc);
+ end
+ 
+ //前端和现金  供应商
+ rule "stepfPayPartner"
+	salience 20
+	activation-group "g_result"
+	lock-on-active true
+	when 
+	  	 result:STradeResult((tradeType=='2020'||tradeType=='2051'
+	  	 ||tradeType=='2050'||tradeType=='2053'
+	  	 ||tradeType=='2055'||tradeType=='2030'
+	  	 ||tradeType=='2010'||tradeType=='1121')&&chanelType=='1'&& virtualTradeType=='1' ) 
+	then
+		String tableName="";
+		String errorCode="";
+		String errorDesc="";
+		 
+		String isFront = result.getIsFront();
+		String frontCode=result.getFrontCode();
+		List<String> sources=new ArrayList<String>();
+		sources.add(ReconBusinessConstant.PlatformNo.FRONT);
+		sources.add(ReconBusinessConstant.PlatformNo.PAY);
+		sources.add(ReconBusinessConstant.PlatformNo.PARTNER);
+		ReconRuleHelp.initialSTradeResult(result, sources);
+		
+		if(STradeResult.IS_YES.equals(isFront)){
+			if(ReconRuleHelp.isSourceHasFile(result, sources)){//几方文件上传成功
+				/***对账成功**/
+				if(ReconRuleHelp.isSuccess(result, sources)){
+					tableName=STradeResult.TABLE_NAME_S_SUCCESS;
+				}else{
+					//各方都已上传
+					if(ReconRuleHelp.isSourceAllSuccess(result,sources)){
+						if(ReconRuleHelp.isSourceHasDelay(result, sources, AppConstant.CUT_HOUR_FPS)){ //是延迟对账
+							tableName=STradeResult.TABLE_NAME_S_DELAY;
+							result.setPlatformNos(ReconRuleHelp.getSourceSuccessPlatform(result, sources));
+						}else{
+							if(STradeResult.FRONT_CODE_SUCCESS.equals(frontCode)){
+							   if(!STradeResult.IS_YES.equals(result.getIsPay())&& !STradeResult.IS_YES.equals(result.getIsPartner())){
+									tableName=STradeResult.TABLE_NAME_S_EXCEPTION;
+									errorCode="f_unilateral_fPayPartner";	//"前端单边";
+							   }else if (!STradeResult.IS_YES.equals(result.getIsPay())&& STradeResult.IS_YES.equals(result.getIsPartner())){
+								   tableName=STradeResult.TABLE_NAME_S_EXCEPTION;
+								   errorCode="f_fail_process_fPayPartner";	//前端数据错误
+							   }else if (STradeResult.IS_YES.equals(result.getIsPay())&& !STradeResult.IS_YES.equals(result.getIsPartner())){
+								   tableName=STradeResult.TABLE_NAME_S_EXCEPTION;
+								   errorCode="f_fail_process_fPayPartner";	//前端数据错误
+							   }
+							}else{
+								if(!STradeResult.IS_YES.equals(result.getIsPay())&& !STradeResult.IS_YES.equals(result.getIsPartner())){
+									tableName=STradeResult.TABLE_NAME_S_OTHER;
+									errorCode="f_success_fPayPartner";	//前端无差错
+								}else if (!STradeResult.IS_YES.equals(result.getIsPay())&& STradeResult.IS_YES.equals(result.getIsPartner())){
+									tableName=STradeResult.TABLE_NAME_S_EXCEPTION;
+									errorCode="f_fail_process_fPayPartner";	//前端数据错误
+								}else if (STradeResult.IS_YES.equals(result.getIsPay())&& !STradeResult.IS_YES.equals(result.getIsPartner())){
+									tableName=STradeResult.TABLE_NAME_S_EXCEPTION;
+									errorCode="f_fail_process_fPayPartner";	//前端数据错误
+								}else{
+									tableName=STradeResult.TABLE_NAME_S_EXCEPTION;
+									errorCode="f_fail_process_fPayPartner";	//前端数据错误
+								}
+							}
+						}
+					}else{
+					  tableName=STradeResult.TABLE_NAME_S_OTHER;
+					  errorCode="flieNoUpload_fPayPartner";	//未上传
+					}
+				}
+			}else{//上传失败，入未对账表    银行文件未生成或者未获取到  一方数据入末对账表
+				tableName=STradeResult.TABLE_NAME_S_NO_RECON;
+				result.setPlatformNos(ReconRuleHelp.getSourceSuccessPlatform(result, sources));
+			}
+		}else{//差错
+			errorCode="unilateral_fPayPartner";//非前方单边
+			tableName=STradeResult.TABLE_NAME_S_EXCEPTION;
+		}
+		result.setTableName(tableName);
+		result.setErrorCode(errorCode);
+		result.setErrorDesc(errorDesc);
+ end
+ 
+ 

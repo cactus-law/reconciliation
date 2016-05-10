@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+	<!-- ipointsService -->
+	<bean id="ipointsService"
+		class="com.froad.recon.importfile.service.impl.IpointsServiceImpl">
+		<property name="ipointsDAO" ref="ipointsDAO" />
+	</bean>
+	<!-- iimpStatusDetailService -->
+	<bean id="iimpStatusDetailService"
+		class="com.froad.recon.importfile.service.impl.IimpStatusDetailServiceImpl">
+		<property name="iimpStatusDetailDAO" ref="iimpStatusDetailDAO" />
+	</bean>
+	<!-- ifrontTradeService -->
+	<bean id="ifrontTradeService"
+		class="com.froad.recon.importfile.service.impl.IfrontTradeServiceImpl">
+		<property name="ifrontTradeDAO" ref="ifrontTradeDAO" />
+	</bean>
+	<!-- ibankDataWuhanService -->
+	<bean id="ibankDataWuhanService"
+		class="com.froad.recon.importfile.service.impl.IbankDataWuhanServiceImpl">
+		<property name="ibankDataWuhanDAO" ref="ibankDataWuhanDAO" />
+	</bean>
+	<!-- ibankDataTaizhouService -->
+	<bean id="ibankDataTaizhouService"
+		class="com.froad.recon.importfile.service.impl.IbankDataTaizhouServiceImpl">
+		<property name="ibankDataTaizhouDAO" ref="ibankDataTaizhouDAO" />
+	</bean>
+	<!-- ibankDataAnhuiService -->
+	<bean id="ibankDataAnhuiService"
+		class="com.froad.recon.importfile.service.impl.IbankDataAnhuiServiceImpl">
+		<property name="ibankDataAnhuiDAO" ref="ibankDataAnhuiDAO" />
+	</bean>
+	
+	<bean id="dynamicService"
+		class="com.froad.recon.importfile.service.impl.DynamicServiceImpl">
+		<property name="dynamicDAO" ref="dynamicDAO" />
+	</bean>
+	
+	<!-- 对账文件切面处理类 -->
+    <bean id="fileHandlerFlowAspectAdvice" class="com.froad.recon.importfile.aop.FileHandlerFlowAspectAdvice"/>
+	
+	<!-- AOP配置 -->
+	<aop:config>
+		<!-- 切面配置 -->
+		<aop:pointcut id="myFileHandlerPointcut" expression="execution(* com.froad.recon.importfile.flow.*.exe*(..))"/>
+		<aop:aspect id="myFileHandlerAspect" ref="fileHandlerFlowAspectAdvice">
+			<!-- 前置通知 -->
+			<aop:before method="doBefore" pointcut-ref="myFileHandlerPointcut"/>
+			<!-- 后置通知 -->
+			<aop:after-returning method="doAfter" returning="result" pointcut-ref="myFileHandlerPointcut"/>
+			<!-- 异常通知 -->
+			<aop:after-throwing method="doThrow" throwing="e" pointcut-ref="myFileHandlerPointcut"/>
+		</aop:aspect>
+	</aop:config>
+	
+	<!-- 获取对账文件 -->
+	<bean id="fileGetProcessorHttpTxt" class="com.froad.recon.importfile.handler.getimpl.FileGetProcessorHttpTxt"/>
+	<bean id="fileGetProcessorHttpZip" class="com.froad.recon.importfile.handler.getimpl.FileGetProcessorHttpZip"/>
+	<bean id="fileGetProcessorHttpZipRename" class="com.froad.recon.importfile.handler.getimpl.FileGetProcessorHttpZipRename"/>
+	<bean id="fileGetProcessorFtpTxt" class="com.froad.recon.importfile.handler.getimpl.FileGetProcessorFtpTxt"/>
+	<bean id="fileGetProcessorHttpAnhuiZip" class="com.froad.recon.importfile.handler.getimpl.FileGetProcessorHttpAnhuiZip"/>
+	<bean id="fileGetProcessorHttpZipNo" class="com.froad.recon.importfile.handler.getimpl.FileGetProcessorHttpZipNo"/>
+	<bean id="fileGetProcessorSftpTxt" class="com.froad.recon.importfile.handler.getimpl.FileGetProcessorSftpTxt"/>
+	
+	<!-- 解析对账文件 -->
+	<bean id="fileAnalysisProcessorSplit" class="com.froad.recon.importfile.handler.analysisimpl.FileAnalysisProcessorSplit"/>
+	<bean id="fileAnalysisProcessorFixlength" class="com.froad.recon.importfile.handler.analysisimpl.FileAnalysisProcessorFixlength"/>
+	<bean id="fileAnalysisProcessorExcel" class="com.froad.recon.importfile.handler.analysisimpl.FileAnalysisProcessorExcel"/>
+	<bean id="fileAnalysisProcessorSplitAnhui" class="com.froad.recon.importfile.handler.analysisimpl.FileAnalysisProcessorSplitAnhui"/>
+	<bean id="fileAnalysisProcessorSplitZip" class="com.froad.recon.importfile.handler.analysisimpl.FileAnalysisProcessorSplitZip"/>
+	
+	<!-- 校验对账文件 -->
+	<bean id="fileCheckProcessorFirstTotal" class="com.froad.recon.importfile.handler.checkimpl.FileCheckProcessorFirstTotal"/>
+	<bean id="fileCheckProcessorSubStr" class="com.froad.recon.importfile.handler.checkimpl.FileCheckProcessorSubStr"/>
+	<bean id="fileCheckProcessorNo" class="com.froad.recon.importfile.handler.checkimpl.FileCheckProcessorNo"/>
+	
+	<!-- 对账数据整理 -->
+	<bean id="dataDealProcessorNo" class="com.froad.recon.importfile.handler.datadealimpl.DataDealProcessorNo"/>
+	<bean id="dataDealProcessorHengShui" class="com.froad.recon.importfile.handler.datadealimpl.DataDealProcessorHengShui"/>
+	<bean id="dataDealProcessorAnhui" class="com.froad.recon.importfile.handler.datadealimpl.DataDealProcessorAnhui"/>
+	<bean id="dataDealProcessorCfront" class="com.froad.recon.importfile.handler.datadealimpl.o2obill.DataDealProcessorCfront"/>
+	<bean id="dataDealProcessorPfront" class="com.froad.recon.importfile.handler.datadealimpl.DataDealProcessorPfront"/>
+	<bean id="dataDealProcessorCalipay" class="com.froad.recon.importfile.handler.datadealimpl.DataDealProcessorCalipay"/>
+	<bean id="dataDealProcessorCpresale" class="com.froad.recon.importfile.handler.datadealimpl.DataDealProcessorCpresale"/>
+	<bean id="dataDealProcessorCZ" class="com.froad.recon.importfile.handler.datadealimpl.DataDealProcessorCZ"/>
+	<bean id="dataDealProcessorSupply" class="com.froad.recon.importfile.handler.datadealimpl.supplier.DataDealProcessorSupply"/>
+	<bean id="dataDealProcessorOfcard" class="com.froad.recon.importfile.handler.datadealimpl.supplier.DataDealProcessorOfcard"/>
+	<bean id="dataDealProcessorPhone" class="com.froad.recon.importfile.handler.datadealimpl.DataDealProcessorPhone"/>
+
+	<bean id="dataDealProcessorPoint" class="com.froad.recon.importfile.handler.datadealimpl.DataDealProcessorPoint"/>
+	<bean id="dataDealProcessorCZRemove" class="com.froad.recon.importfile.handler.datadealimpl.DataDealProcessorCZRemove"/>
+	
+	<bean id="dataDealProcessorPointO2O" class="com.froad.recon.importfile.handler.datadealimpl.DataDealProcessorPointO2O"/>
+	<bean id="dataDealProcessorBossRefund" class="com.froad.recon.importfile.handler.datadealimpl.DataDealProcessorBossRefund"/>
+
+	<bean id="pointsFO2ObillDataDeal" class="com.froad.recon.importfile.handler.datadealimpl.o2obill.PointsFO2ObillDataDeal"/>
+	<bean id="dataDealProcessorPayRefund" class="com.froad.recon.importfile.handler.datadealimpl.bill.DataDealProcessorPayRefund"/>
+	<bean id="dataDealProcessorPayCZ" class="com.froad.recon.importfile.handler.datadealimpl.bill.DataDealProcessorPayCZ"/>
+	<bean id="dataDealProcessorPay" class="com.froad.recon.importfile.handler.datadealimpl.bill.DataDealProcessorPay"/>
+	<bean id="dataDealProcessorGuilin" class="com.froad.recon.importfile.handler.datadealimpl.DataDealProcessorGuilin"/>
+	<bean id="pointsFYUSHOUDataDeal" class="com.froad.recon.importfile.handler.datadealimpl.PointsFYUSHOUDataDeal"/>
+	<!-- 安徽积分兑换 -->
+	<bean id="dataDealProcessorAhExch" class="com.froad.recon.importfile.handler.datadealimpl.DataDealProcessorAhExch"/>
+	
+	
+	<bean id="dataDealProcessorPresellPay" class="com.froad.recon.importfile.handler.datadealimpl.DataDealProcessorPresellPay"/>
+	
+	
+	<bean id="dataDealProcessorOldStore" class="com.froad.recon.importfile.handler.datadealimpl.mall.DataDealProcessorOldStore"/>
+	
+	
+	<!-- 对账文件处理工厂 -->
+	<bean id="fileHandlerFactory" class="com.froad.recon.importfile.handler.FileHandlerFactory">
+			<!-- 获取对账文件 -->
+			<property name="fileGetProcessorMap">
+			      <map>
+			     		<entry key="fileGetProcessorHttpTxt"  value-ref="fileGetProcessorHttpTxt"  />
+			     		<entry key="fileGetProcessorHttpZip"  value-ref="fileGetProcessorHttpZip"  />
+			     		<entry key="fileGetProcessorHttpZipRename"  value-ref="fileGetProcessorHttpZipRename"  />
+			     		<entry key="fileGetProcessorFtpTxt"  value-ref="fileGetProcessorFtpTxt"  />
+			     		<entry key="fileGetProcessorHttpAnhuiZip"  value-ref="fileGetProcessorHttpAnhuiZip"  />
+			     		<entry key="fileGetProcessorHttpZipNo"  value-ref="fileGetProcessorHttpZipNo"  />
+			     		<entry key="fileGetProcessorSftpTxt"  value-ref="fileGetProcessorSftpTxt"  />
+			      </map>
+		  	</property>
+		  	<!-- 解析对账文件 -->
+		  	<property name="fileAnalysisProcessorMap">
+			      <map>
+			     		<entry key="fileAnalysisProcessorSplit"  value-ref="fileAnalysisProcessorSplit"  />
+			     		<entry key="fileAnalysisProcessorFixlength"  value-ref="fileAnalysisProcessorFixlength"  />
+			     		<entry key="fileAnalysisProcessorExcel"  value-ref="fileAnalysisProcessorExcel"  />
+			     		<entry key="fileAnalysisProcessorSplitAnhui"  value-ref="fileAnalysisProcessorSplitAnhui"  />
+			     		<entry key="fileAnalysisProcessorSplitZip"  value-ref="fileAnalysisProcessorSplitZip"  />
+			      </map>
+		  	</property>
+		  	<!-- 校验对账文件 -->
+		  	<property name="fileCheckProcessorMap">
+			      <map>
+			     		<entry key="fileCheckProcessorFirstTotal"  value-ref="fileCheckProcessorFirstTotal"  />
+			     		<entry key="fileCheckProcessorSubStr"  value-ref="fileCheckProcessorSubStr"  />
+			     		<entry key="fileCheckProcessorNo"  value-ref="fileCheckProcessorNo"  />
+			      </map>
+		  	</property>
+		  	<!-- 对账数据整理 -->
+		  	<property name="dataDealProcessorMap">
+			      <map>
+			     		<entry key="dataDealProcessorNo"  value-ref="dataDealProcessorNo"  />
+			     		<entry key="dataDealProcessorHengShui" value-ref="dataDealProcessorHengShui"  />
+			     		<entry key="dataDealProcessorAnhui" value-ref="dataDealProcessorAnhui"  />
+			     		<entry key="dataDealProcessorCfront" value-ref="dataDealProcessorCfront"  />
+			     		<entry key="dataDealProcessorPfront" value-ref="dataDealProcessorPfront"  />
+			     		<entry key="dataDealProcessorCalipay" value-ref="dataDealProcessorCalipay"  />
+			     		<entry key="dataDealProcessorCpresale" value-ref="dataDealProcessorCpresale"  />
+			     		<entry key="dataDealProcessorCZ" value-ref="dataDealProcessorCZ"  />
+			     		<entry key="dataDealProcessorSupply" value-ref="dataDealProcessorSupply"  />
+			     		<entry key="dataDealProcessorOfcard" value-ref="dataDealProcessorOfcard"  />
+			     		<entry key="dataDealProcessorPhone" value-ref="dataDealProcessorPhone"  />
+			     		<entry key="dataDealProcessorPoint" value-ref="dataDealProcessorPoint"  />
+			     		<entry key="dataDealProcessorCZRemove" value-ref="dataDealProcessorCZRemove"  />
+			     		<entry key="dataDealProcessorPointO2O" value-ref="dataDealProcessorPointO2O"/>
+			     		<entry key="dataDealProcessorBossRefund" value-ref="dataDealProcessorBossRefund"/>
+			     		<entry key="pointsFO2ObillDataDeal" value-ref="pointsFO2ObillDataDeal"></entry>
+			     		<entry key="dataDealProcessorPayRefund" value-ref="dataDealProcessorPayRefund"/>
+			     		<entry key="dataDealProcessorPayCZ" value-ref="dataDealProcessorPayCZ"/>
+			     		<entry key="dataDealProcessorPay" value-ref="dataDealProcessorPay"/>
+			     		<entry key="dataDealProcessorGuilin" value-ref="dataDealProcessorGuilin"/>
+			     		<entry key="dataDealProcessorPresellPay" value-ref="dataDealProcessorPresellPay"/>
+			     		<entry key="pointsFYUSHOUDataDeal" value-ref="pointsFYUSHOUDataDeal"></entry>
+			     		<entry key="dataDealProcessorOldStore" value-ref="dataDealProcessorOldStore"></entry>
+			     		<entry key="dataDealProcessorAhExch" value-ref="dataDealProcessorAhExch"></entry>
+			      </map>
+		  	</property>
+	</bean>
+</beans>

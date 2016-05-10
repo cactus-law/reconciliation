@@ -1,0 +1,310 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Quartz 1 - CronTriggers Tutorial</TITLE>
+<LINK href="CronTriggers Tutorial.files/site.css" type=text/css
+	rel=stylesheet>
+<META http-equiv=Content-Type content="text/html; charset=UTF-8">
+<META content="MSHTML 6.00.2800.1586" name=GENERATOR>
+</HEAD>
+<BODY>
+	<TABLE class=pagecontent cellSpacing=0 cellPadding=0 width="100%"
+		bgColor=#ffffff border=0>
+		<TBODY>
+			<TR>
+				<TD class=pagebody vAlign=top>
+
+					<H3>
+						<A name=CronTriggersTutorial-Introduction></A>介绍
+					</H3>
+					<P>
+						<TT>cron</TT>
+						是一种UNIX工具，它有着强大的调度能力. 本系统调度方式采用的就是基于cron的.
+					</P>
+					<H3>
+						<A name=CronTriggersTutorial-Format></A>格式
+					</H3>
+					<P>一个cron表达式是一个字符串，由6或7个由空格分隔的域组成。每个域基于允许的取值，如下:</P>
+					<TABLE class=confluenceTable>
+						<TBODY>
+							<TR>
+								<TH class=confluenceTh>域名</TH>
+								<TH class=confluenceTh>描述</TH>
+								<TH class=confluenceTh>强制?</TH>
+								<TH class=confluenceTh>允许值</TH>
+								<TH class=confluenceTh>允许特殊字符</TH>
+							</TR>
+							<TR>
+								<TD class=confluenceTd>Seconds</TD>
+								<TD class=confluenceTd>秒</TD>
+								<TD class=confluenceTd>是</TD>
+								<TD class=confluenceTd>0-59</TD>
+								<TD class=confluenceTd>, - * /</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd>Minutes</TD>
+								<TD class=confluenceTd>分</TD>
+								<TD class=confluenceTd>是</TD>
+								<TD class=confluenceTd>0-59</TD>
+								<TD class=confluenceTd>, - * /</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd>Hours</TD>
+								<TD class=confluenceTd>时</TD>
+								<TD class=confluenceTd>是</TD>
+								<TD class=confluenceTd>0-23</TD>
+								<TD class=confluenceTd>, - * /</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd>Day of month</TD>
+								<TD class=confluenceTd>月第几天</TD>
+								<TD class=confluenceTd>是</TD>
+								<TD class=confluenceTd>1-31</TD>
+								<TD class=confluenceTd>, - * ? / L W C</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd>Month</TD>
+								<TD class=confluenceTd>月</TD>
+								<TD class=confluenceTd>是</TD>
+								<TD class=confluenceTd>1-12 or JAN-DEC</TD>
+								<TD class=confluenceTd>, - * /</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd>Day of week</TD>
+								<TD class=confluenceTd>周第几天</TD>
+								<TD class=confluenceTd>是</TD>
+								<TD class=confluenceTd>1-7 or SUN-SAT</TD>
+								<TD class=confluenceTd>, - * ? / L C #</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd>Year</TD>
+								<TD class=confluenceTd>年</TD>
+								<TD class=confluenceTd>否</TD>
+								<TD class=confluenceTd>empty, 1970-2099</TD>
+								<TD class=confluenceTd>, - * /</TD>
+							</TR>
+						</TBODY>
+					</TABLE>
+					<P>
+						因此cron表达式可以简单表示为:
+						<TT>* * * * ? *</TT>
+						<BR> 更复杂的比如:
+						<TT>0 0/5 14,18,3-39,52 ? JAN,MAR,SEP MON-FRI 2002-2010</TT>
+					</P>
+					<H3>
+						<A name=CronTriggersTutorial-Specialcharacters></A>特殊字符
+					</H3>
+					<UL>
+						<LI><B><TT>*</TT></B> (<EM>"所有取值"</EM>) - 用于选择一个域内的各种取值. 例如,
+							"*"在分钟域里表示 <EM>"每分钟"</EM>.</LI>
+					</UL>
+					<UL>
+						<LI><B><TT>?</TT></B> (<EM>"无特定值"</EM>) -
+							当需要在两个域的其中一个域里设置某个允许的取值，并且不想考虑另外一个域的取值时有用.举一个例子,我需要在当月的某一天(比如,
+							10th)触发一个作业，而不管它是该周的第几天，这时我可以在 day-of-month域里设置 "10" ,
+							并在day-of-week里设置 "?". 再看看接下来的一些例子.</LI>
+					</UL>
+					<UL>
+						<LI><B><TT>-</TT></B> - 用来设置范围. 举个例子, "10-12" 在小时域里表示<EM>"10,
+								11 和 12时"</EM>.</LI>
+					</UL>
+					<UL>
+						<LI><B><TT>,</TT></B> - 用来设置多个值. 举个例子, "MON,WED,FRI"
+							在day-of-week域表示 <EM>"星期一,星期三,星期五"</EM>.</LI>
+					</UL>
+					<UL>
+						<LI><B><TT>/</TT></B> - 用来设定增量.举个例子, "0/15" 在seconds域表示 <EM>"
+								0, 15, 30, 和 45秒"</EM>. 还有 "5/15" 在seconds域表示 <EM>" 5, 20, 35, 和
+								50秒表</EM>. 你还可以在'*'后设置'/' - 在这种情况下'*' 等同于'/'前面的'0'. '1/3' 在
+							day-of-month域表示<EM>"从月的第一天起每隔3天触发"</EM>.</LI>
+					</UL>
+					<UL>
+						<LI><B><TT>L</TT></B> (<EM>"last"</EM>) - 在可以取该值的域里有不同的含义.
+							举个例子, "L"在day-of-month域里表示 <EM>"月的最后一天"</EM> - 对非闰年的一、二月分别是31和28.
+							如果用在 day-of-week域, 它只表示着"7"或者"SAT". 但是如果用在day-of-week域的另一个取值之后则 <EM>"月的最后第xxx
+								天"</EM> - 举个例子，"6L"表示 <EM>"月的最后一个星期五"</EM>. 当使用'L'
+							选项时,切勿设置列表和取值范围，否则会导致混淆结果.</LI>
+					</UL>
+					<UL>
+						<LI><B><TT>W</TT></B> (<EM>"weekday"</EM>) -
+							用来设置最接近给定日期的周平日(星期一-星期五).举个例子,如果设置"15W"作为day-of-month域的值, 含义是: <EM>"最靠近15th的周平日"</EM>.
+							所以如果15日是一个星期六, 将在14日星期五触发. 如果15日是星期天,将在16日星期一触发.
+							如果15日是星期二，将在15日星期二触发 .
+							但是，如果设置"1W"作为day-of-month域的取值,且1日是星期六,将在3日的星期一触发, 因为它不会'跳'出月的边界.
+							字符'W'仅能在day-of-month域取单一值，而不是范围、列表值时使用.</LI>
+					</UL>
+					<TABLE class=tipMacro cellSpacing=8 cellPadding=5 width="85%"
+						align=center border=0>
+						<COLGROUP>
+							<COL width=24>
+							<COL>
+						</COLGROUP>
+						<TBODY>
+							<TR>
+								<TD vAlign=top><IMG height=16 alt="" src="" width=16
+									align=absMiddle border=0></TD>
+								<TD>
+									<P>
+										字符 'L' 和 'W'可以在day-of-month域组合成'LW'使用, 表示<EM>"月的最后一个平日"</EM>.
+									</P>
+								</TD>
+							</TR>
+						</TBODY>
+					</TABLE>
+					<UL>
+						<LI><B><TT>#</TT></B> - 用来设置该月的"第n个"在星期中的第XXX日. 举个例子, "6#3"
+							在day-of-week域表示 <EM>"该月的第3个星期五"</EM> (day 6 = 星期五 和 "#3" =
+							该月的第3). 其它例子有: "2#1" = 该月的第1个星期一 和 "4#5" = 该月的第五个星期三. 注意如果你设置"#5"
+							且给定的 将不触发.</LI>
+					</UL>
+					<UL>
+						<!--<LI><B><TT>C</TT></B> (<EM>"calendar"</EM>) - this means values are 
+        calculated against the associated calendar, if any. If no calendar is 
+        associated, then it is equivalent to having an all-inclusive calendar. A 
+        value of "5C" in the day-of-month field means <EM>"the first day 
+        included by the calendar on or after the 5th"</EM>. A value of "1C" in 
+        the day-of-week field means <EM>"the first day included by the calendar 
+        on or after Sunday"</EM>. </LI>-->
+					</UL>
+					<TABLE class=infoMacro cellSpacing=8 cellPadding=5 width="85%"
+						align=center border=0>
+						<COLGROUP>
+							<COL width=24>
+							<COL>
+						</COLGROUP>
+						<TBODY>
+							<TR>
+								<TD vAlign=top><IMG height=16 alt="" src="" width=16
+									align=absMiddle border=0></TD>
+								<TD>
+									<P>
+										月份名称、星期的字符不区分大小写.
+										<TT>MON</TT>
+										等同于
+										<TT>mon</TT>
+										.
+									</P>
+								</TD>
+							</TR>
+						</TBODY>
+					</TABLE>
+					<H3>
+						<A name=CronTriggersTutorial-Examples></A>举例
+					</H3>
+					<P>以下是一些完全的例子:</P>
+					<TABLE class=confluenceTable>
+						<TBODY>
+							<TR>
+								<TH class=confluenceTh>表达式</TH>
+								<TH class=confluenceTh>涵义</TH>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 0 12 * * ?</TT></TD>
+								<TD class=confluenceTd>在每天的下午12点(中午)触发</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 15 10 ? * *</TT></TD>
+								<TD class=confluenceTd>在每天的上午10点15分触发</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 15 10 * * ?</TT></TD>
+								<TD class=confluenceTd>在每天的上午10点15分触发</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 15 10 * * ? *</TT></TD>
+								<TD class=confluenceTd>在每天的上午10点15分触发</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 15 10 * * ? 2005</TT></TD>
+								<TD class=confluenceTd>在2005年的每天上午10点15分触发</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 * 14 * * ?</TT></TD>
+								<TD class=confluenceTd>在每天从下午2点到下午2点59分的每分钟触发</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 0/5 14 * * ?</TT></TD>
+								<TD class=confluenceTd>在每天从下午2点到下午2:55, 每隔5分钟触发</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 0/5 14,18 * * ?</TT></TD>
+								<TD class=confluenceTd>从下午2点到下午2:55的每5分钟触发，从下午6点到下午6:55的每5分钟触发
+								</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 0-5 14 * * ?</TT></TD>
+								<TD class=confluenceTd>在每天的从下午2点到下午2点05分的每一分钟触发</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 10,44 14 ? 3 WED</TT></TD>
+								<TD class=confluenceTd>在3月的每个周三的下午2:10、2:44触发.</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 15 10 ? * MON-FRI</TT></TD>
+								<TD class=confluenceTd>在每周一、周二、周三、周四、周五的上午10:15触发</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 15 10 15 * ?</TT></TD>
+								<TD class=confluenceTd>在每月的15日的上午10:15触发</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 15 10 L * ?</TT></TD>
+								<TD class=confluenceTd>在每月的最后一天的上午10:15触发</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 15 10 ? * 6L</TT></TD>
+								<TD class=confluenceTd>在每月的最后一个星期五的上午10:15触发</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 15 10 ? * 6L 2002-2005</TT></TD>
+								<TD class=confluenceTd>在2002, 2003,
+									2004和2005年的，每月的最后一个星期五的上午10:15触发</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 15 10 ? * 6#3</TT></TD>
+								<TD class=confluenceTd>在每月的第3个星期五的上午10:15触发</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 0 12 1/5 * ?</TT></TD>
+								<TD class=confluenceTd>从每个月份的第一天开始，每隔5天，在下午12点 (中午)触发.</TD>
+							</TR>
+							<TR>
+								<TD class=confluenceTd><TT>0 11 11 11 11 ?</TT></TD>
+								<TD class=confluenceTd>在每年11月11日的上午 11时11分触发.</TD>
+							</TR>
+						</TBODY>
+					</TABLE>
+					<TABLE class=warningMacro cellSpacing=8 cellPadding=5 width="85%"
+						align=center border=0>
+						<COLGROUP>
+							<COL width=24>
+							<COL>
+						</COLGROUP>
+						<TBODY>
+							<TR>
+								<TD vAlign=top><IMG height=16 alt="" src="" width=16
+									align=absMiddle border=0></TD>
+								<TD>
+									<P>注意'?' and '*' 在day-of-week、day-of-month域的影响!</P>
+								</TD>
+							</TR>
+						</TBODY>
+					</TABLE>
+					<H3>
+						<A name=CronTriggersTutorial-Notes></A>注意
+					</H3>
+					<UL>
+						<!--<LI>Support for the features described for the 'C' character is not 
+        complete. -->
+						<LI>对同时设置day-of-week和day-of-month域的具体值的支持不完备，(必需在其中的一个域里设置'?').
+							<!--<LI>Be careful when setting fire times between mid-night and 1:00 AM - 
+        "daylight savings" can cause a skip or a repeat depending on whether the 
+        time moves back or jumps forward. 
+</LI>-->
+					</UL>
+				</TD>
+			</TR>
+		</TBODY>
+	</TABLE>
+</BODY>
+</HTML>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+        "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+    <constant name="struts.enable.DynamicMethodInvocation" value="true"/>
+    <constant name="struts.ognl.allowStaticMethodAccess" value="true"/>
+    <constant name="struts.i18n.encoding" value="UTF-8"/>
+    <constant name="struts.ui.theme" value="simple"/>
+    <constant name="struts.i18n.reload" value="false"/>
+    <constant name="struts.configuration.xml.reload" value="false"/>
+
+    <package name="common" namespace="/" extends="struts-default">
+        <global-results>
+            <!--<result name="promptMessage">/promptMessage.jsp</result>-->
+            <result name="exception">/thenew_errormessage.jsp</result>
+            <result name="serviceException">/thenew_errormessage.jsp</result>
+            <result name="sqlException">/thenew_errormessage.jsp</result>
+        </global-results>
+
+        <global-exception-mappings>
+            <exception-mapping result="sqlException" exception="java.sql.SQLException"/>
+            <!--JDBCConnectionException-->
+            <exception-mapping result="exception" exception="java.lang.Exception"/>
+        </global-exception-mappings>
+    </package>
+
+    <!--<package name="reconcile"  extends="common">
+        <action name="index" class="reconcileAction" method="index">
+            <result>/index.html</result>
+        </action>
+        <action name="reconcileAction" class="reconcileAction">
+            <result name="moduleRun">/moduleRunNew.jsp</result>
+        </action>
+        &lt;!&ndash; 新改版 &ndash;&gt;
+        <action name="extendsReconcileAction" class="extendsReconcileAction">
+            <result name="moduleRun">/thenew_execute.jsp</result>
+        </action>
+    </package>-->
+    <package name="flow" extends="common">
+        <action name="*_extendsNontaxAction" class="extendsNontaxAction" method="{1}">
+            <result name="list">/thenew_execute.jsp</result>
+            <result name="moduleRun">/thenew_execute.jsp</result>
+            <result name="flowlist">/thenew_flow.jsp</result>
+            <result name="rckfilemgerList">/thenew_file.jsp</result>
+            <result name="clusterList">/thenew_cluster.jsp</result>
+            <result name="err">/index.html</result>
+        </action>
+    </package>
+    <package name="reconcile" extends="common">
+        <action name="*_reconcileAction" class="reconcileAction" method="{1}">
+            <result name="clusterList">/thenew_cluster.jsp</result>
+            <result name="err">/index.html</result>
+        </action>
+    </package>
+</struts>
+	

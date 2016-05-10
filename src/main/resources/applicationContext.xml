@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+    <!-- spring自动去扫描base-pack下面或者子包下面的java文件，如果扫描到有@Component @Controller@Service等这些注解的类，则把这些类注册为bean -->
+    <context:component-scan base-package="com"/>
+    <aop:aspectj-autoproxy/>
+
+    <!-- 加载外部配置文件 -->
+    <bean class="com.froad.comon.util.PropertyUtil">
+        <property name="locations">
+            <list>
+                <!-- 数据库配置 -->
+                <value>file:/data/ubank/config/web/reconciliation/jdbc.properties</value>
+                <!-- 邮件配置 -->
+                <value>file:/data/ubank/config/web/reconciliation/mail.properties</value>
+                <!-- 日切流程配置 -->
+                <value>file:/data/ubank/config/web/reconciliation/rq.properties</value>
+                <!-- 交易对账配置 -->
+                <value>file:/data/ubank/config/web/reconciliation/reconcile.properties</value>
+                <!-- http基本参数配置 -->
+                <value>file:/data/ubank/config/web/reconciliation/http.properties</value>
+                <!-- 基本公共数据配置 -->
+                <value>file:/data/ubank/config/web/reconciliation/common.properties</value>
+                <!-- redis数据配置 -->
+                <value>file:/data/ubank/config/web/reconciliation/redis.properties</value>
+            </list>
+        </property>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    </bean>
+
+    <!-- loadLogBackXml -->
+    <bean id="initLogBackContext" class="com.froad.comon.InitLogBackContext" >
+        <property name="locations">
+            <list>
+                <value>file:/data/ubank/config/web/reconciliation/init.properties</value>
+            </list>
+        </property>
+        <property name="logBackXmlPath">
+            <value>/data/ubank/config/web/reconciliation/logbackXml.xml</value>
+        </property>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+
+    </bean>
+
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>properties/messages</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="pageMessageUtil" class="com.froad.recon.reconciliation.common.PageMessageUtil">
+	<property name="messageSource" ref="messageSource"></property>
+	</bean>
+
+    <!--bean id="httpUtil" class="com.froad.comon.util.HttpUtil">
+        <property name="socketTimeout" value="${socketTimeout}"/>
+        <property name="connectTimeout" value="${connectTimeout}"/>
+        <property name="reqCharset" value="${reqCharset}"/>
+    </bean-->
+
+    <!-- C3P0 数据库连接池配置 -->
+    <bean id="dataSourceC3p0" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close"
+          dependency-check="none">
+        <property name="driverClass">
+            <value>${jdbc.driverClassName}</value>
+        </property>
+        <property name="jdbcUrl">
+            <value>${jdbc.url}</value>
+        </property>
+        <property name="user">
+            <value>${jdbc.username}</value>
+        </property>
+        <property name="password">
+            <value>${jdbc.password}</value>
+        </property>
+        <property name="acquireIncrement">
+            <value>${c3p0.acquireIncrement}</value>
+        </property>
+        <property name="initialPoolSize">
+            <value>${c3p0.initialPoolSize}</value>
+        </property>
+        <property name="minPoolSize">
+            <value>${c3p0.minPoolSize}</value>
+        </property>
+        <property name="maxPoolSize">
+            <value>${c3p0.maxPoolSize}</value>
+        </property>
+        <property name="maxIdleTime">
+            <value>${c3p0.maxIdleTime}</value>
+        </property>
+        <property name="idleConnectionTestPeriod">
+            <value>${c3p0.idleConnectionTestPeriod}</value>
+        </property>
+        <property name="maxStatements">
+            <value>${c3p0.maxStatements}</value>
+        </property>
+        <property name="numHelperThreads">
+            <value>${c3p0.numHelperThreads}</value>
+        </property>
+        <property name="maxConnectionAge">
+            <value>${c3p0.maxConnectionAge}</value>
+        </property>
+    </bean>
+
+    <bean id="sf" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <!-- <bean id="sf" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"> 注解配置 -->
+        <property name="dataSource" ref="dataSourceC3p0"/>
+        <property name="mappingDirectoryLocations">
+            <list>
+                <!-- 批量加载hibernate3 实体bean的xml配置文件 -->
+                <value>classpath:com/froad/beans</value>
+                <value>classpath:com/froad/recon/sys/model</value>
+                <value>classpath:com/froad/recon/importfile/model</value>
+                <value>classpath:com/froad/recon/reconciliation/model</value>
+                <value>classpath:com/froad/recon/sync/model</value>
+            </list>
+        </property>
+
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">false</prop>
+                <!-- 开发测试配置 -->
+                <!--<prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.jdbc.fetch_size">1000</prop>
+                <prop key="hibernate.jdbc.batch_size">100</prop>-->
+            </props>
+        </property>
+    </bean>
+
+    <!-- URL静态参数 -->
+    <bean id="urlCommand" class="com.froad.comon.URLCommand">
+        <!-- openApi接口地址 -->
+<!--         <property name="OPENAPI_COMMAND_URL" value="${openapi_command_url}"/> -->
+    </bean>
+
+    <!-- 其他静态参数 -->
+    <bean id="commonConstant" class="com.froad.comon.CommonConstant">
+        <property name="PUBLIC_KEY" value="${reconciliation_public_key}"/>
+        <!--加签串公钥 -->
+        <property name="OPENAPI_PARTNER_ID" value="${openapi_partner_id}"/>
+        <!-- 商户id-->
+    </bean>
+
+
+    <!-- hibernateTemplate   -->
+    <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+        <property name="sessionFactory" ref="sf"></property>
+    </bean>
+
+    <bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sf"/>
+    </bean>
+
+    <bean id="baseDao" class="com.froad.comon.dao.BaseDao" scope="prototype" autowire="byName">
+        <property name="hibernateTemplate" ref="hibernateTemplate"></property>
+    </bean>
+
+    <bean id="propertUtil" class="com.froad.comon.util.PropertyUtil" scope="singleton"></bean>
+
+    <bean id="taskQuartzRck" class="com.froad.flow.handler.TaskQuartzRck" init-method="execute"
+          autowire="byName"/>
+
+    <bean id="baseAction" class="com.froad.comon.action.BaseAction" scope="prototype" autowire="byName"></bean>
+
+    <tx:annotation-driven transaction-manager="txManager"/>
+
+    <!-- 全局aop <aop:config>
+         <aop:pointcut id="bussinessService"
+                       expression="(execution(* com.froad.rck.service.*.*(..)))OR(execution(* com.froad.reconcile.service.*.*(..)))"/>
+         <aop:advisor pointcut-ref="bussinessService" advice-ref="txAdvice"/>
+     </aop:config>-->
+
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            <tx:method name="*Tx" propagation="REQUIRED" rollback-for="com.froad.common.ServiceException"/>
+            <tx:method name="*Rn" propagation="REQUIRES_NEW" rollback-for="com.froad.common.ServiceException"/>
+            <tx:method name="*Rx" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+            <tx:method name="*Rnx" propagation="REQUIRES_NEW" rollback-for="java.lang.Exception"/>
+            <tx:method name="*" propagation="NEVER"/>
+        </tx:attributes>
+    </tx:advice>
+    
+    <tx:advice id="transAdvice" transaction-manager="txManager" >
+		<tx:attributes>
+			<tx:method name="get*" read-only="true" propagation="SUPPORTS" />
+			<tx:method name="set*" read-only="true" propagation="SUPPORTS" />
+			<tx:method name="query*" read-only="true" propagation="SUPPORTS" />
+			<tx:method name="select*" read-only="true" propagation="SUPPORTS" />
+			<tx:method name="find*" read-only="true" propagation="SUPPORTS" />
+			<tx:method name="*" propagation="REQUIRED"
+				rollback-for="java.lang.Exception,java.lang.RuntimeException"/>
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config>
+		<aop:advisor advice-ref="transAdvice"
+			pointcut="execution(* com.froad.recon.reconciliation.service.impl.*.*(..))"
+			order="2" />
+		<aop:advisor advice-ref="transAdvice"
+			pointcut="execution(* com.froad.recon.sys.service.impl.*.*(..))"
+			order="2" />
+		<aop:advisor advice-ref="transAdvice"
+			pointcut="execution(* com.froad.recon.importfile.service.impl.*.*(..))"
+			order="2" />
+			
+		<aop:advisor advice-ref="transAdvice"
+			pointcut="execution(* com.froad.recon.sync.service.impl.*.*(..))"
+			order="2" />	
+	</aop:config>
+
+<!--自动对账start -->
+    <bean id="jobRecon" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="taskQuartzRck"/>
+        <property name="targetMethod" value="quartzRecon"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+    <bean id="quartzRckJobReconTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail" ref="jobRecon"/>
+        <property name="cronExpression">
+            <value>${quartzReconJob}</value>
+        </property>
+    </bean>
+    <!-- end 自动对账  -->
+    
+    <!--quartz 调度 -->
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+              <!-- 请求支付-->
+<!--                 <ref bean="quartzRckJobReconTrigger"/> -->
+            </list>
+        </property>
+    </bean>
+    
+    <!-- 初始化参数 -->
+    <bean id="paramCommand"  class="com.froad.comon.constant.ParamCommand">
+    	<property name="rule_dir"  value="${rule_dir}"/>
+    	<property name="data_dir"  value="${data_dir}"/>
+    	<property name="bankpoints_datafile_url"  value="${bankpoints_datafile_url}"/>
+    	<property name="bankgroup_anhui" value="${bankgroup_anhui}"/>
+    </bean>
+    
+    <!-- 导入对账数据切面处理类 -->
+    <bean id="reconImpDataFlowAspectAdvice" class="com.froad.flow.service.ReconImpDataFlowAspectAdvice"/>
+	
+	<!-- AOP配置 -->
+	<aop:config>
+		<!-- 切面配置 -->
+		<aop:pointcut id="myPointcut" expression="execution(* com.froad.flow.impl.points.*.exe*(..))"/>
+		<aop:aspect id="myAspect" ref="reconImpDataFlowAspectAdvice">
+			<!-- 前置通知 -->
+			<aop:before method="doBefore" pointcut-ref="myPointcut"/>
+			<!-- 后置通知 -->
+			<aop:after-returning method="doAfter" returning="result" pointcut-ref="myPointcut"/>
+			<!-- 异常通知 -->
+			<aop:after-throwing method="doThrow" throwing="e" pointcut-ref="myPointcut"/>
+		</aop:aspect>
+	</aop:config>
+    
+    <!-- 公共dao配置信息 -->
+    <import resource="spring-dao-base.xml" />
+    
+    
+     <!--redis -->
+    <import resource="spring-redis.xml" />
+     <!-- 对账系统dao -->
+    <import resource="spring-dao-sys.xml" />
+     <!-- 对账系统service -->
+    <import resource="spring-service-sys.xml" />
+    
+     <!-- 对账文件导入dao -->
+    <import resource="spring-dao-importfile.xml" />
+     <!-- 对账文件导入service -->
+    <import resource="spring-service-importfile.xml" />
+    
+     <!-- 对账dao -->
+    <import resource="spring-dao-reconciliation.xml" />
+     <!-- 对账service -->
+    <import resource="spring-service-reconciliation.xml" />
+    
+     <!--数据同步dao -->
+    <import resource="spring-dao-sync.xml" />
+     <!-- 数据同步service -->
+    <import resource="spring-service-sync.xml" />
+    
+    
+    
+     <!--流程定义 -->
+    <import resource="spring-service-flow.xml" />
+     <!--公共-->
+    <import resource="spring-common.xml" />
+
+</beans>
