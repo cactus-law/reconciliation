@@ -4,7 +4,7 @@ common-annotations.jar
 javaee.jar
 unionapi.jar
 
-
+test
 版本不明确：
 aspectjrt.jar
 aspectjweaver.jar
